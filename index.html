@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f6f8">
+    <meta name="description" content="The private member hub for the Blessed Tansi Band Group.">
+    <title>Blessed Tansi Band Group</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
+    <script type="module" src="assets/js/dashboard.js"></script>
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Blessed Tansi Band home">
+        <span class="brand-mark" id="site-logo">BT</span>
+        <span class="brand-name">Blessed Tansi <span>Band Group</span></span>
+      </a>
+      <div class="topbar-actions">
+        <span id="connection-status" class="connection-status"><span></span> Not configured</span>
+        <button id="theme-toggle" class="icon-button" type="button" aria-label="Toggle color theme" title="Toggle color theme">◐</button>
+        <button id="sign-out" class="button button-quiet hidden" type="button">Sign out</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="auth-panel" class="auth-layout">
+        <div class="hero-copy">
+          <p class="eyebrow">MUSIC · SERVICE · COMMUNITY</p>
+          <h1 id="hero-title">Blessed Tansi<br><span>Band Group</span></h1>
+          <p id="hero-subtitle" class="hero-subtitle">Together in music, service, and community.</p>
+          <div class="hero-note"><span class="note-icon">✦</span><span>A home for our members, our music, and the moments that bring us together.</span></div>
+          <div class="hero-orbit" aria-hidden="true"><div class="orbit-ring"></div><div class="orbit-disc">BT</div><span class="orbit-dot dot-a"></span><span class="orbit-dot dot-b"></span></div>
+        </div>
+        <div class="auth-card glass-card">
+          <div class="auth-heading">
+            <p class="eyebrow">MEMBER PORTAL</p>
+            <h2 id="auth-title">Welcome back</h2>
+            <p id="auth-description">Sign in to your private member space.</p>
+          </div>
+          <div class="auth-switch" role="tablist" aria-label="Account access">
+            <button class="auth-tab active" id="login-tab" type="button" role="tab" aria-selected="true">Sign in</button>
+            <button class="auth-tab" id="signup-tab" type="button" role="tab" aria-selected="false">Create account</button>
+          </div>
+          <form id="auth-form">
+            <label id="name-field" class="field hidden">Full name<input name="full_name" autocomplete="name" required></label>
+            <label class="field">Email address<input name="email" type="email" autocomplete="email" required></label>
+            <label class="field">Password<input name="password" type="password" minlength="8" autocomplete="current-password" required></label>
+            <p id="auth-error" class="form-message" role="status"></p>
+            <button id="auth-submit" class="button button-primary button-wide" type="submit">Sign in <span>→</span></button>
+          </form>
+          <p class="auth-footnote">New member accounts need approval before accessing the private hub.</p>
+        </div>
+      </section>
+
+      <section id="pending-panel" class="center-panel glass-card hidden" aria-live="polite">
+        <span class="status-icon">⌛</span>
+        <p class="eyebrow">ACCOUNT REVIEW</p>
+        <h1 id="pending-title">You're on the list.</h1>
+        <p id="pending-message">Your account is awaiting approval from the band leadership. Please check back after your membership is confirmed.</p>
+        <button class="button button-quiet sign-out-action" type="button">Sign out</button>
+      </section>
+
+      <section id="app-panel" class="app-layout hidden">
+        <aside class="sidebar glass-card">
+          <div class="member-mini">
+            <div class="avatar" id="member-avatar">BT</div>
+            <div><strong id="member-name">Member</strong><span id="member-role">Band member</span></div>
+          </div>
+          <nav id="primary-nav" class="primary-nav" aria-label="Main navigation">
+            <button class="nav-item active" data-view="overview" type="button"><span>⌂</span> Overview</button>
+            <button class="nav-item" data-view="directory" type="button"><span>♧</span> Directory</button>
+            <button class="nav-item" data-view="finance" type="button"><span>◈</span> Finance</button>
+            <button class="nav-item" data-view="updates" type="button"><span>◌</span> Updates & minutes</button>
+            <button class="nav-item" data-view="id-card" type="button"><span>▤</span> My digital ID</button>
+            <div id="admin-nav" class="admin-nav hidden">
+              <p class="nav-label">LEADERSHIP</p>
+              <button class="nav-item" data-view="users" type="button"><span>♙</span> Member access</button>
+              <button class="nav-item" data-view="payments" type="button"><span>＄</span> Payment review</button>
+              <button class="nav-item" data-view="content" type="button"><span>✎</span> Publish update</button>
+              <button class="nav-item" data-view="import" type="button"><span>⇧</span> CSV tools</button>
+              <button class="nav-item superadmin-only" data-view="settings" type="button"><span>⚙</span> Site settings</button>
+            </div>
+          </nav>
+          <div class="sidebar-footer"><span class="footer-dot"></span> Blessed Tansi · Member space</div>
+        </aside>
+        <section class="workspace">
+          <div class="page-heading">
+            <div><p class="eyebrow" id="page-eyebrow">YOUR BAND AT A GLANCE</p><h1 id="page-title">Good to see you.</h1></div>
+            <span id="member-id-chip" class="member-id-chip"></span>
+          </div>
+          <div id="view-content" aria-live="polite"></div>
+          <p id="view-error" class="form-message" role="status"></p>
+        </section>
+      </section>
+    </main>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
