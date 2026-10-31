@@ -17,11 +17,12 @@ A static, responsive member portal built with HTML, CSS, vanilla JavaScript, and
    where id = 'YOUR_AUTH_USER_UUID';
    ```
 
-   Sign in again. The superadmin can approve member accounts, assign executive roles and permission flags, import records, and manage the landing page.
+   Sign in again. The superadmin can approve member accounts, assign executive roles and permission flags, create approved admin accounts, import records, and manage the landing page.
 
 ## Access and files
 
 - New accounts are created as `user` / `pending`; a superadmin must approve them. Users cannot edit their own role, approval status, permission flags, member ID, or join date.
+- In **Member access**, a superadmin can create an admin account with a temporary password. The new admin is approved and receives all executive permissions; email confirmation is still required if enabled in Supabase Auth. Admin creation uses a separate, non-persisting Supabase client so the superadmin's current session is not replaced.
 - Executive permissions are independently controlled by `can_upload_minutes`, `can_verify_payments`, `can_view_financials`, and `can_post_announcements`. Row-level policies and storage policies enforce these permissions regardless of the interface.
 - Receipts and minutes are private files. Receipt uploads are stored under the member's Auth UUID; minutes are readable by approved members. Avatars and site branding use public buckets so they can be displayed on the directory and public landing page.
 - Financial totals come from verified payment records and recalculate as soon as a treasurer verifies a submission. Amounts are displayed without assuming a currency; configure the currency convention with your organization.
