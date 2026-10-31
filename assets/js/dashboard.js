@@ -411,7 +411,7 @@ async function renderUsers() {
       <form id="admin-create-form" class="form-grid">
         <label class="field">Full name<input name="full_name" autocomplete="name" maxlength="100" required></label>
         <label class="field">Email address<input name="email" type="email" autocomplete="email" required></label>
-        <label class="field span-all">Temporary password<input name="password" type="password" minlength="8" autocomplete="new-password" required><span class="helper-text">At least 8 characters. Share it securely and ask the admin to change it after signing in.</span></label>
+        <label class="field span-all">Temporary password<input name="password" type="password" minlength="8" autocomplete="new-password" required><span class="helper-text">At least 8 characters. Share it with the new admin through a secure channel.</span></label>
         <p id="admin-create-message" class="form-message span-all" role="status"></p>
         <div class="span-all"><button class="button button-primary" type="submit">Create admin account <span>→</span></button></div>
       </form>
@@ -454,7 +454,7 @@ async function renderUsers() {
         $("#admin-create-message"),
         result.emailConfirmationRequired
           ? `Admin account created for ${email}. They must confirm the email before signing in.`
-          : `Admin account created for ${email}. They can sign in now and should change the temporary password.`,
+          : `Admin account created for ${email}. They can sign in with the password you shared securely.`,
         true
       );
     } catch (error) {
