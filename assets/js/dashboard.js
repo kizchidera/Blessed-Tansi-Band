@@ -1,4 +1,4 @@
-import { getCurrentSession, getProfile, signIn, signOut, signUp, watchAuthState } from "./auth.js";
+import { createAdminAccount, getCurrentSession, getProfile, signIn, signOut, signUp, watchAuthState } from "./auth.js";
 import { isSupabaseConfigured, supabase } from "./supabaseClient.js";
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -407,6 +407,15 @@ async function renderUsers() {
   if (state.profile.role !== "superadmin") throw new Error("Only superadmins can manage member access.");
   const profiles = await queryRows("profiles", "id,full_name,member_id,role,status,can_upload_minutes,can_verify_payments,can_view_financials,can_post_announcements,joined_at", (query) => query.order("joined_at", { ascending: false }));
   viewContent.innerHTML = `
+    <section class="content-card"><div class="section-heading"><div><h2>Create an admin account</h2><p>New admins are approved and receive all four executive permissions. They cannot manage member access, imports, or site settings.</p></div></div>
+      <form id="admin-create-form" class="form-grid">
+        <label class="field">Full name<input name="full_name" autocomplete="name" maxlength="100" required></label>
+        <label class="field">Email address<input name="email" type="email" autocomplete="email" required></label>
+        <label class="field span-all">Temporary password<input name="password" type="password" minlength="8" autocomplete="new-password" required><span class="helper-text">At least 8 characters. Share it securely and ask the admin to change it after signing in.</span></label>
+        <p id="admin-create-message" class="form-message span-all" role="status"></p>
+        <div class="span-all"><button class="button button-primary" type="submit">Create admin account <span>→</span></button></div>
+      </form>
+    </section>
     <section class="content-card"><div class="section-heading"><div><h2>Member accounts</h2><p>Approve memberships and configure executive access.</p></div></div>
       <div class="table-wrap"><table><thead><tr><th>Member</th><th>Status</th><th>Role</th><th>Executive permissions</th><th>Save</th></tr></thead><tbody>
       ${profiles.map((person) => `<tr data-user-row="${escapeHtml(person.id)}">
@@ -423,6 +432,42 @@ async function renderUsers() {
       </tr>`).join("")}
       </tbody></table></div>
     </section>`;
+  $("#admin-create-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const button = $("button[type='submit']", form);
+    const message = $("#admin-create-message");
+    const email = form.elements.email.value.trim();
+    setBusy(button, true, "Creating account…");
+    showMessage(message, "");
+    let accountCreated = false;
+    try {
+      const result = await createAdminAccount(
+        email,
+        form.elements.password.value,
+        form.elements.full_name.value.trim()
+      );
+      accountCreated = true;
+      form.reset();
+      await renderUsers();
+      showMessage(
+        $("#admin-create-message"),
+        result.emailConfirmationRequired
+          ? `Admin account created for ${email}. They must confirm the email before signing in.`
+          : `Admin account created for ${email}. They can sign in now and should change the temporary password.`,
+        true
+      );
+    } catch (error) {
+      showMessage(
+        $("#admin-create-message") || message,
+        accountCreated
+          ? `Admin account was created, but the member list could not be refreshed: ${error.message}`
+          : error.message
+      );
+    } finally {
+      setBusy(button, false);
+    }
+  });
   $$(".save-user").forEach((button) => button.addEventListener("click", async () => {
     const row = button.closest("[data-user-row]");
     const id = row.dataset.userRow;

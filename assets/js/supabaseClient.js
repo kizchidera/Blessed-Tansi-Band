@@ -12,4 +12,11 @@ export const supabase = configured
     })
   : null;
 
+export function createIsolatedAuthClient() {
+  if (!configured) throw new Error("Supabase is not configured.");
+  return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+  });
+}
+
 export const isSupabaseConfigured = configured;
