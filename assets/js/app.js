@@ -1,49 +1,10 @@
 (() => {
   "use strict";
 
-
   const CONFIG = {
     googleClientId: "302392212120-ahsmq6b22a74h5538u4etkh8c3c5mpte.apps.googleusercontent.com",
     publishedCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSyX3EAbrlffUM16wNh3PeHzhmU0zzt2RP3YpvKC1QXdcbN_CShBWtYR0evVGjyBDXqMx7ifGtGBgtS/pub?gid=0&single=true&output=csv",
     appsScriptUrl: "https://script.google.com/macros/s/AKfycbyhgRzTQj2A9PXqGRsyIBUitoZiEt8F5kcFQx1Lc_FsOokrbhEno3vWE3uW9WCp4eoePA/exec"
-  };
-  const state = {
-    credential: "",
-    profile: null,
-    role: "",
-    publicData: { members: [], announcements: [], minutes: [] },
-    importRows: null
-  };
-  const $ = selector => document.querySelector(selector);
-  const $$ = selector => Array.from(document.querySelectorAll(selector));
-  const escapeHtml = value => String(value == null ? "" : value).replace(/[&<>"']/g, char => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-  })[char]);
-  const text = (value, fallback = "") => String(value == null || value === "" ? fallback : value);
-
-
-  document.addEventListener("DOMContentLoaded", init);
-
-
-  async function init() {
-    initTheme();
-    bindEvents();
-    await loadPublicData();
-    initGoogleSignIn();
-    const savedCredential = sessionStorage.getItem("btb_google_credential");
-    if (savedCredential) {
-      state.credential = savedCredential;
-      await loadMemberProfile();
-    }
-  }
-
-(() => {
-  "use strict";
-
-  const CONFIG = {
-    googleClientId: "YOUR_GOOGLE_OAUTH_CLIENT_ID",
-    publishedCsvUrl: "https://docs.google.com/spreadsheets/d/e/YOUR_PUBLISHED_SHEET_ID/pub?output=csv",
-    appsScriptUrl: "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL"
   };
   const state = {
     credential: "",
