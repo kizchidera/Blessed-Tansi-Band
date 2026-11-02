@@ -1,0 +1,17 @@
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local editor and tooling state
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Local environment and generated files
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+coverage/
+*.log

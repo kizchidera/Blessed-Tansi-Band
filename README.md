@@ -1,34 +1,119 @@
 # Blessed Tansi Band Group
 
-A static, responsive member portal built with HTML, CSS, vanilla JavaScript, and Supabase. It is designed to run on GitHub Pages; all authenticated database and file operations are made directly from the browser using the Supabase publishable (or legacy anon) key.
+A static, responsive member portal for GitHub Pages. Google Sheets stores the records, a deliberately limited published CSV supplies public directory/announcement/minutes data, Google Apps Script performs authenticated reads and writes, and Google Identity Services identifies members.
 
-## Set up Supabase
+## Important privacy and security notes
 
-1. Create a Supabase project and open **SQL Editor**.
-2. Run [`supabase_schema.sql`](./supabase_schema.sql) once. It creates the tables, signup profile trigger, access-control helpers, RLS policies, storage buckets, and the historical payment import function.
-3. In **Project Settings → API**, copy the Project URL and the publishable key (or legacy anon key). Add them to `SUPABASE_URL` and `SUPABASE_ANON_KEY` in [`assets/js/supabaseClient.js`](./assets/js/supabaseClient.js). Never use a `service_role` key in this application.
-4. In **Authentication → URL Configuration**, set the site URL and allowed redirect URLs for local development and the GitHub Pages URL, for example `https://<account>.github.io/<repository>/`.
-5. Serve the project over HTTP during development (the ES modules do not work from a `file://` URL), then publish the repository using GitHub Pages.
-6. Create the first account through the app and confirm its email if email confirmation is enabled. In the SQL Editor, promote that account using its Auth user UUID:
+- **Do not publish private membership or payment tabs as CSV.** A published CSV is public to anyone with its URL. Publish only a `PublicData` tab containing information the band has chosen to make public.
+- Member roles, membership status, private contribution history, and payment approvals are checked again by Apps Script. Hiding controls in the browser is not authorization.
+- Apps Script validates the Google ID token audience and verified email. Only emails in the `SUPERADMIN_EMAILS` script property can bootstrap or assign privileged roles. Keep the spreadsheet and script editor access restricted.
+- Google Drive links are links, not uploads. Set the intended Drive sharing permissions before entering the link. Do not put sensitive receipts in a publicly shared folder.
+- A GitHub Pages app is public source code. Never add OAuth client secrets, service-account keys, or passwords to this repository. A Google OAuth **client ID** is public by design.
 
-   ```sql
-   update public.profiles
-   set role = 'superadmin', status = 'approved'
-   where id = 'YOUR_AUTH_USER_UUID';
-   ```
+## 1. Create the spreadsheet
 
-   Sign in again. The superadmin can approve member accounts, assign executive roles and permission flags, create approved admin accounts, import records, and manage the landing page.
+Create a Google spreadsheet with these tabs and exact header rows. Keep IDs, phone numbers, and references formatted as **Plain text** in Sheets so leading zeros remain intact.
 
-## Access and files
+### `Members`
 
-- New accounts are created as `user` / `pending`; a superadmin must approve them. Users cannot edit their own role, approval status, permission flags, member ID, or join date.
-- In **Member access**, a superadmin can create an admin account with a temporary password. The new admin is approved and receives all executive permissions; email confirmation is still required if enabled in Supabase Auth. Admin creation uses a separate, non-persisting Supabase client so the superadmin's current session is not replaced.
-- Executive permissions are independently controlled by `can_upload_minutes`, `can_verify_payments`, `can_view_financials`, and `can_post_announcements`. Row-level policies and storage policies enforce these permissions regardless of the interface.
-- Receipts and minutes are private files. Receipt uploads are stored under the member's Auth UUID; minutes are readable by approved members. Avatars and site branding use public buckets so they can be displayed on the directory and public landing page.
-- Financial totals come from verified payment records and recalculate as soon as a treasurer verifies a submission. Amounts are displayed without assuming a currency; configure the currency convention with your organization.
-- The member CSV template updates existing accounts by Auth UUID; it cannot create Auth users. Historical contribution imports use the database-guarded `import_historical_payment` function and are recorded as verified by the importing superadmin.
-- PapaParse and the QR code generator are loaded from public CDNs. Keep internet access available for those features.
+```text
+member_id | full_name | email | phone | role | status | joined_at
+```
 
-## Before launch
+### `Payments`
 
-Review the Supabase project's Auth email settings, redirect URLs, backup/retention policy, and storage limits. The browser-visible key is expected to be public; the security boundary is the database schema, RLS policies, and storage policies. Do not disable RLS or add a service-role key to the site.
+```text
+payment_id | member_id | email | period | amount | reference | receipt_url | status | submitted_at | approved_by | approved_at
+```
+
+### `Announcements`
+
+```text
+announcement_id | title | message | priority | created_at | created_by
+```
+
+### `Minutes`
+
+```text
+minute_id | title | date | drive_url | uploaded_by
+```
+
+### `PublicData`
+
+Make a separate public-safe tab with this header row:
+
+```text
+record_type | full_name | member_id | role | status | title | message | priority | date | drive_url
+```
+
+Use one row per public directory member (`record_type` = `member`), announcement (`announcement`), or meeting minutes link (`minutes`). Never add private email, phone, financial details, or receipt links to this tab.
+
+## 2. Publish the public CSV
+
+In Google Sheets, select **File → Share → Publish to web**, choose only the `PublicData` sheet, choose CSV, and publish. Copy the CSV URL. Publishing a tab makes that tab publicly readable; verify the selected tab and sample its URL in a private browser before using it.
+
+Edit the `CONFIG` values at the top of [`assets/js/app.js`](./assets/js/app.js):
+
+```js
+googleClientId: "YOUR_GOOGLE_OAUTH_CLIENT_ID",
+publishedCsvUrl: "https://docs.google.com/spreadsheets/d/e/.../pub?output=csv",
+appsScriptUrl: "https://script.google.com/macros/s/.../exec"
+```
+
+Papa Parse is configured with `dynamicTyping: false`, so numeric-looking IDs and phone numbers remain strings. Keep the corresponding spreadsheet columns formatted as plain text too.
+
+## 3. Configure Google sign-in
+
+1. In Google Cloud Console, create/select a project and configure the OAuth consent screen.
+2. Create an OAuth client ID for a **Web application**.
+3. Add both your local preview origin (for example `http://localhost:5500`) and the deployed GitHub Pages origin (for example `https://OWNER.github.io`) to **Authorized JavaScript origins**.
+4. Put the client ID (not a client secret) in `assets/js/app.js`.
+5. Add your own Google account email to the Apps Script `SUPERADMIN_EMAILS` property before deployment. On first sign-in, the script creates an active starter member row for this configured account. The superadmin identity is configured server-side, not from a browser-supplied role.
+
+## 4. Deploy the Apps Script bridge
+
+1. Open **Extensions → Apps Script** from the spreadsheet.
+2. Replace the editor contents with [`google_apps_script.js`](./google_apps_script.js), save, and authorize the requested spreadsheet and external-request scopes as the spreadsheet owner.
+3. Open **Project Settings → Script properties** and add:
+   - `SPREADSHEET_ID`: the ID from the spreadsheet URL.
+   - `GOOGLE_OAUTH_CLIENT_ID`: the same OAuth web client ID used by the app.
+   - `SUPERADMIN_EMAILS`: comma-separated email addresses of the initial superadmins.
+4. Deploy → **New deployment** → type **Web app**. Execute as **Me**. Choose the narrowest access option that still allows member Google sign-in (typically **Anyone**); access to data and writes is then checked by the script using each verified Google ID token and the sheet role. Do not rely on the deployment's public URL being secret.
+5. Copy the deployed `/exec` URL into `appsScriptUrl`. After code changes, create a new deployment version.
+6. Confirm the superadmin email is spelled correctly before inviting members. The initial account must appear in `SUPERADMIN_EMAILS`; role changes in the browser cannot create another superadmin.
+
+The script requires all five tabs/headers above. `get_member_data` returns only the signed-in member's record and payments; finance executives receive pending payments; the complete private member list is exposed only to superadmins. Published CSV refreshes may be delayed briefly after spreadsheet changes.
+
+## 5. Preview locally
+
+Do not open `index.html` directly as a `file://` URL. From the project folder, start any local static server, for example:
+
+```powershell
+py -m http.server 5500
+```
+
+Then open `http://localhost:5500`. Alternatively, use the VS Code **Live Server** extension and add its origin to the Google OAuth client. Confirm the theme toggle, mobile navigation, public CSV data, Google sign-in, member registration, and authorized/unauthorized Apps Script actions.
+
+Without configured Google URLs, the UI intentionally shows setup notices; the layout and theme still work.
+
+## 6. Publish with GitHub Pages
+
+1. Create or open the intended GitHub repository and place these files at its published root.
+2. Review the files for private data and confirm only the `PublicData` tab is published.
+3. In the repository, open **Settings → Pages**, choose **Deploy from a branch**, select the intended branch and `/ (root)`, then save.
+4. Add the final Pages origin to the OAuth client's authorized origins. Wait for the deployment and open the Pages URL over HTTPS.
+5. Verify the browser console/network and test account roles with separate member accounts.
+
+For version control, review the changed files in VS Code Source Control, stage the intended app files, commit with a message such as `Build Blessed Tansi member portal`, then use **Publish Branch** / **Sync Changes** to push to the connected GitHub repository. The current workspace may need to be initialized as a Git repository and connected to the correct remote first; verify the repository and remote before pushing.
+
+## Current feature scope
+
+- Light/dark theme follows system preference and persists locally.
+- Public directory, announcements, and minutes load from the published CSV.
+- Google sign-in is matched to the private member directory; new sign-ins can request membership.
+- Members can view their own contributions and submit payment references/receipt links.
+- Verified finance roles can approve pending payments; superadmins manage member statuses and roles, bulk-import members, and secretaries/admins publish updates and minutes links.
+- The member card generates a QR code from the member ID and can be printed/saved to PDF.
+- CSV bulk onboarding validates a preview and downloads a matching template.
+
+The portal does not store passwords, host receipt files, or provide general-purpose spreadsheet editing. Share any linked Drive files only with the intended audience.

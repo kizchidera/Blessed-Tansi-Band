@@ -1,104 +1,138 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f5f6f8">
-    <meta name="description" content="The private member hub for the Blessed Tansi Band Group.">
-    <title>Blessed Tansi Band Group</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
-    <script type="module" src="assets/js/dashboard.js"></script>
-  </head>
-  <body>
-    <div class="ambient ambient-one"></div>
-    <div class="ambient ambient-two"></div>
-    <header class="topbar">
-      <a class="brand" href="#" aria-label="Blessed Tansi Band home">
-        <span class="brand-mark" id="site-logo">BT</span>
-        <span class="brand-name">Blessed Tansi <span>Band Group</span></span>
-      </a>
-      <div class="topbar-actions">
-        <span id="connection-status" class="connection-status"><span></span> Not configured</span>
-        <button id="theme-toggle" class="icon-button" type="button" aria-label="Toggle color theme" title="Toggle color theme">◐</button>
-        <button id="sign-out" class="button button-quiet hidden" type="button">Sign out</button>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f6f8">
+  <meta name="description" content="The Blessed Tansi Band Group member portal for updates, membership, and contributions.">
+  <title>Blessed Tansi Band Group</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="site-header glass">
+    <a class="brand" href="#overview" aria-label="Blessed Tansi Band Group home">
+      <span class="brand-mark" aria-hidden="true">BT</span>
+      <span><strong>Blessed Tansi</strong><small>Band Group</small></span>
+    </a>
+    <button class="menu-toggle icon-button" id="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Open navigation">☰</button>
+    <nav class="primary-nav" id="primary-nav" aria-label="Main navigation">
+      <a href="#overview">Overview</a>
+      <a href="#directory">Directory</a>
+      <a href="#finances">Finances</a>
+      <a href="#minutes">Minutes</a>
+      <a href="#announcements">Updates</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">◐</button>
+      <div id="auth-slot" class="auth-slot"><span class="muted small">Preparing sign-in…</span></div>
+    </div>
+  </header>
+
+  <main id="main-content" class="page-shell">
+    <section class="hero glass" id="overview">
+      <div class="hero-copy">
+        <p class="eyebrow">Together in harmony</p>
+        <h1>A stronger band,<br><span>in tune together.</span></h1>
+        <p class="hero-lede">Your home for band news, member connections, meeting notes, and contribution updates.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#announcements">Explore updates <span aria-hidden="true">↗</span></a>
+          <button class="button button-secondary" id="hero-sign-in" type="button">Member sign in</button>
+        </div>
       </div>
-    </header>
+      <div class="hero-art" aria-hidden="true">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="note note-one">♪</div><div class="note note-two">♫</div>
+        <div class="hero-disc"><span>BT</span><small>ONE BAND<br>ONE FAMILY</small></div>
+      </div>
+      <div class="hero-foot"><span class="live-dot"></span><span id="data-status">Connecting to band updates…</span></div>
+    </section>
 
-    <main>
-      <section id="auth-panel" class="auth-layout">
-        <div class="hero-copy">
-          <p class="eyebrow">MUSIC · SERVICE · COMMUNITY</p>
-          <h1 id="hero-title">Blessed Tansi<br><span>Band Group</span></h1>
-          <p id="hero-subtitle" class="hero-subtitle">Together in music, service, and community.</p>
-          <div class="hero-note"><span class="note-icon">✦</span><span>A home for our members, our music, and the moments that bring us together.</span></div>
-          <div class="hero-orbit" aria-hidden="true"><div class="orbit-ring"></div><div class="orbit-disc">BT</div><span class="orbit-dot dot-a"></span><span class="orbit-dot dot-b"></span></div>
+    <section class="section-block" aria-labelledby="welcome-heading">
+      <div class="section-heading">
+        <div><p class="eyebrow">Member space</p><h2 id="welcome-heading">Your band at a glance</h2></div>
+        <span class="role-badge" id="role-badge">Guest</span>
+      </div>
+      <div class="dashboard-grid">
+        <article class="card glass feature-card">
+          <div class="card-topline"><span class="icon-tile violet">✦</span><span class="status-pill" id="member-status">Not signed in</span></div>
+          <p class="card-kicker">Welcome back</p><h3 id="member-name">Your band community</h3>
+          <p class="muted" id="member-message">Sign in with your Google account to view your member dashboard and contribution details.</p>
+          <div class="card-actions"><button class="text-button" id="dashboard-sign-in" type="button">Sign in to continue <span aria-hidden="true">→</span></button></div>
+        </article>
+        <article class="card glass stat-card"><span class="icon-tile blue">◎</span><p class="card-kicker">Band members</p><strong class="stat-value" id="member-count">—</strong><span class="muted small">In the public directory</span></article>
+        <article class="card glass stat-card"><span class="icon-tile amber">◷</span><p class="card-kicker">Contribution status</p><strong class="stat-value stat-label" id="contribution-status">Sign in required</strong><span class="muted small" id="contribution-caption">Your records stay private</span></article>
+      </div>
+    </section>
+
+    <section class="section-block" id="directory" aria-labelledby="directory-heading">
+      <div class="section-heading"><div><p class="eyebrow">Meet the ensemble</p><h2 id="directory-heading">Band directory</h2><p class="section-subtitle">Find a fellow member and stay connected.</p></div></div>
+      <div class="toolbar card glass">
+        <label class="search-wrap"><span aria-hidden="true">⌕</span><input id="directory-search" type="search" placeholder="Search members by name or role" autocomplete="off"></label>
+        <label class="select-wrap"><span class="sr-only">Filter members by status</span><select id="directory-filter"><option value="all">All members</option><option value="active">Active</option><option value="pending">Pending</option></select></label>
+      </div>
+      <div class="directory-grid" id="directory-list"><div class="empty-state card glass">Loading the band directory…</div></div>
+      <p class="notice-line" id="directory-notice"></p>
+    </section>
+
+    <section class="section-block split-section" id="finances" aria-labelledby="finance-heading">
+      <div>
+        <div class="section-heading"><div><p class="eyebrow">Member-only</p><h2 id="finance-heading">Financial hub</h2><p class="section-subtitle">View your contributions and submit a payment reference.</p></div></div>
+        <div class="card glass">
+          <div id="payment-list" class="stack-list"><p class="muted">Sign in with an active member account to view private contribution records.</p></div>
         </div>
-        <div class="auth-card glass-card">
-          <div class="auth-heading">
-            <p class="eyebrow">MEMBER PORTAL</p>
-            <h2 id="auth-title">Welcome back</h2>
-            <p id="auth-description">Sign in to your private member space.</p>
-          </div>
-          <div class="auth-switch" role="tablist" aria-label="Account access">
-            <button class="auth-tab active" id="login-tab" type="button" role="tab" aria-selected="true">Sign in</button>
-            <button class="auth-tab" id="signup-tab" type="button" role="tab" aria-selected="false">Create account</button>
-          </div>
-          <form id="auth-form">
-            <label id="name-field" class="field hidden">Full name<input name="full_name" autocomplete="name" required></label>
-            <label class="field">Email address<input name="email" type="email" autocomplete="email" required></label>
-            <label class="field">Password<input name="password" type="password" minlength="8" autocomplete="current-password" required></label>
-            <p id="auth-error" class="form-message" role="status"></p>
-            <button id="auth-submit" class="button button-primary button-wide" type="submit">Sign in <span>→</span></button>
-          </form>
-          <p class="auth-footnote">New member accounts need approval before accessing the private hub.</p>
-        </div>
-      </section>
+      </div>
+      <div class="card glass form-card">
+        <p class="eyebrow">Record a contribution</p><h3>Submit payment details</h3>
+        <form id="payment-form">
+          <label>Contribution period<input name="period" required maxlength="80" placeholder="e.g. November 2026"></label>
+          <div class="form-row"><label>Amount<input name="amount" type="number" min="1" step="0.01" required placeholder="0.00"></label><label>Payment reference<input name="reference" required maxlength="120" placeholder="Bank or transfer reference"></label></div>
+          <label>Receipt link <span class="muted">(optional Google Drive link)</span><input name="receiptUrl" type="url" placeholder="https://drive.google.com/..."></label>
+          <button class="button button-primary" type="submit">Submit for review</button>
+          <p class="form-message" id="payment-message" role="status"></p>
+        </form>
+      </div>
+    </section>
 
-      <section id="pending-panel" class="center-panel glass-card hidden" aria-live="polite">
-        <span class="status-icon">⌛</span>
-        <p class="eyebrow">ACCOUNT REVIEW</p>
-        <h1 id="pending-title">You're on the list.</h1>
-        <p id="pending-message">Your account is awaiting approval from the band leadership. Please check back after your membership is confirmed.</p>
-        <button class="button button-quiet sign-out-action" type="button">Sign out</button>
-      </section>
+    <section class="section-block id-section" aria-labelledby="id-heading">
+      <div class="section-heading"><div><p class="eyebrow">Yours, wherever you go</p><h2 id="id-heading">Digital member card</h2><p class="section-subtitle">Your personal membership ID, ready to print.</p></div></div>
+      <div class="id-card-wrap">
+        <article class="membership-card" id="membership-card">
+          <div class="id-card-head"><span class="brand-mark brand-mark-light">BT</span><span class="id-card-label">OFFICIAL MEMBER<br>IDENTIFICATION</span></div>
+          <div class="id-card-content">
+            <div><p class="id-overline">Blessed Tansi Band Group</p><h3 id="id-member-name">Member name</h3><p class="id-card-role" id="id-member-role">Registered member</p></div>
+            <div id="member-qr" role="img" aria-label="Member ID QR code"></div>
+          </div>
+          <div class="id-card-foot"><span><small>MEMBER ID</small><strong id="id-member-number">Sign in to display</strong></span><span><small>STATUS</small><strong id="id-member-state">—</strong></span></div>
+        </article>
+        <button class="button button-secondary" id="print-card" type="button" disabled>Print / save card</button>
+      </div>
+    </section>
 
-      <section id="app-panel" class="app-layout hidden">
-        <aside class="sidebar glass-card">
-          <div class="member-mini">
-            <div class="avatar" id="member-avatar">BT</div>
-            <div><strong id="member-name">Member</strong><span id="member-role">Band member</span></div>
-          </div>
-          <nav id="primary-nav" class="primary-nav" aria-label="Main navigation">
-            <button class="nav-item active" data-view="overview" type="button"><span>⌂</span> Overview</button>
-            <button class="nav-item" data-view="directory" type="button"><span>♧</span> Directory</button>
-            <button class="nav-item" data-view="finance" type="button"><span>◈</span> Finance</button>
-            <button class="nav-item" data-view="updates" type="button"><span>◌</span> Updates & minutes</button>
-            <button class="nav-item" data-view="id-card" type="button"><span>▤</span> My digital ID</button>
-            <div id="admin-nav" class="admin-nav hidden">
-              <p class="nav-label">LEADERSHIP</p>
-              <button class="nav-item" data-view="users" type="button"><span>♙</span> Member access</button>
-              <button class="nav-item" data-view="payments" type="button"><span>＄</span> Payment review</button>
-              <button class="nav-item" data-view="content" type="button"><span>✎</span> Publish update</button>
-              <button class="nav-item" data-view="import" type="button"><span>⇧</span> CSV tools</button>
-              <button class="nav-item superadmin-only" data-view="settings" type="button"><span>⚙</span> Site settings</button>
-            </div>
-          </nav>
-          <div class="sidebar-footer"><span class="footer-dot"></span> Blessed Tansi · Member space</div>
-        </aside>
-        <section class="workspace">
-          <div class="page-heading">
-            <div><p class="eyebrow" id="page-eyebrow">YOUR BAND AT A GLANCE</p><h1 id="page-title">Good to see you.</h1></div>
-            <span id="member-id-chip" class="member-id-chip"></span>
-          </div>
-          <div id="view-content" aria-live="polite"></div>
-          <p id="view-error" class="form-message" role="status"></p>
-        </section>
-      </section>
-    </main>
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  </body>
+    <section class="section-block split-section" id="minutes" aria-labelledby="minutes-heading">
+      <div><div class="section-heading"><div><p class="eyebrow">Stay in the know</p><h2 id="minutes-heading">Meeting minutes</h2><p class="section-subtitle">Official notes shared by the band.</p></div></div><div class="stack-list" id="minutes-list"><div class="empty-state card glass">Meeting minutes will appear here.</div></div></div>
+      <div><div class="section-heading"><div><p class="eyebrow">For members</p><h2>Notifications</h2><p class="section-subtitle">Announcements from band leadership.</p></div></div><div class="stack-list" id="announcement-list"><div class="empty-state card glass">Announcements will appear here.</div></div></div>
+    </section>
+
+    <section class="section-block admin-section hidden" id="admin-tools" aria-labelledby="admin-heading">
+      <div class="section-heading"><div><p class="eyebrow">Leadership workspace</p><h2 id="admin-heading">Administration</h2><p class="section-subtitle">Tools are shown according to your verified sheet role.</p></div><span class="role-badge" id="admin-role"></span></div>
+      <div class="admin-grid">
+        <article class="card glass admin-panel hidden" id="approvals-panel"><p class="eyebrow">Finance team</p><h3>Pending payment approvals</h3><div id="approval-list" class="stack-list"><p class="muted">No pending approvals.</p></div></article>
+        <article class="card glass admin-panel hidden" id="members-panel"><p class="eyebrow">Superadmin</p><h3>Member approvals & roles</h3><div id="admin-member-list" class="stack-list"></div></article>
+        <article class="card glass admin-panel hidden" id="import-panel"><p class="eyebrow">Onboarding tools</p><h3>Bulk member import</h3><p class="muted small">Import a validated CSV. New accounts start as pending unless the status is Active.</p><div class="inline-actions"><button class="text-button" id="download-template" type="button">Download CSV template ↓</button><label class="button button-secondary file-button">Choose CSV<input id="import-file" type="file" accept=".csv,text/csv"></label></div><div id="import-preview" class="import-preview"></div><button class="button button-primary hidden" id="import-confirm" type="button">Import validated members</button></article>
+        <article class="card glass admin-panel hidden" id="publish-panel"><p class="eyebrow">Secretary desk</p><h3>Publish an update</h3><form id="announcement-form"><label>Title<input name="title" maxlength="120" required></label><label>Message<textarea name="message" rows="3" maxlength="2000" required></textarea></label><label>Priority<select name="priority"><option>General</option><option>Urgent</option></select></label><button class="button button-primary" type="submit">Publish announcement</button><p class="form-message" id="announcement-message" role="status"></p></form><hr><form id="minutes-form"><label>Meeting title<input name="title" maxlength="120" required></label><div class="form-row"><label>Date<input name="date" type="date"></label><label>Drive PDF link<input name="driveUrl" type="url" required placeholder="https://drive.google.com/..."></label></div><button class="button button-secondary" type="submit">Add meeting minutes</button><p class="form-message" id="minutes-message" role="status"></p></form></article>
+      </div>
+    </section>
+
+    <footer class="site-footer"><a class="brand footer-brand" href="#overview"><span class="brand-mark">BT</span><span><strong>Blessed Tansi</strong><small>Band Group</small></span></a><p>Made for music, community, and service.</p><a href="#overview">Back to top ↑</a></footer>
+  </main>
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="assets/js/app.js" defer></script>
+</body>
 </html>
