@@ -55,31 +55,31 @@ In Google Sheets, select **File → Share → Publish to web**, choose only the 
 Edit the `CONFIG` values at the top of [`assets/js/app.js`](./assets/js/app.js):
 
 ```js
-googleClientId: "YOUR_GOOGLE_OAUTH_CLIENT_ID",
-publishedCsvUrl: "https://docs.google.com/spreadsheets/d/e/.../pub?output=csv",
-appsScriptUrl: "https://script.google.com/macros/s/.../exec"
+googleClientId: "302392212120-ahsmq6b22a74h5538u4etkh8c3c5mpte.apps.googleusercontent.com",
+publishedCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSyX3EAbrlffUM16wNh3PeHzhmU0zzt2RP3YpvKC1QXdcbN_CShBWtYR0evVGjyBDXqMx7ifGtGBgtS/pub?gid=0&single=true&output=csv",
+appsScriptUrl: "https://script.google.com/macros/s/AKfycbyhgRzTQj2A9PXqGRsyIBUitoZiEt8F5kcFQx1Lc_FsOokrbhEno3vWE3uW9WCp4eoePA/exec"
 ```
 
 Papa Parse is configured with `dynamicTyping: false`, so numeric-looking IDs and phone numbers remain strings. Keep the corresponding spreadsheet columns formatted as plain text too.
 
 ## 3. Configure Google sign-in
 
-1. In Google Cloud Console, create/select a project and configure the OAuth consent screen.
-2. Create an OAuth client ID for a **Web application**.
-3. Add both your local preview origin (for example `http://localhost:5500`) and the deployed GitHub Pages origin (for example `https://OWNER.github.io`) to **Authorized JavaScript origins**.
-4. Put the client ID (not a client secret) in `assets/js/app.js`.
-5. Add your own Google account email to the Apps Script `SUPERADMIN_EMAILS` property before deployment. On first sign-in, the script creates an active starter member row for this configured account. The superadmin identity is configured server-side, not from a browser-supplied role.
+1. The OAuth consent screen is configured for **External** users in **Testing** mode. Add each permitted sign-in account under **Audience → Test users**; `blessedtansiband@gmail.com` has been added. Complete Google's verification/publishing requirements before allowing all members to sign in.
+2. The **Web application** OAuth client has been created.
+3. Its authorized JavaScript origins are `http://localhost:5500` and `https://kizchidera.github.io`.
+4. The public OAuth client ID is configured in `assets/js/app.js`; never put a client secret in the frontend.
+5. The Apps Script `SUPERADMIN_EMAILS` property is set to `blessedtansiband@gmail.com`. On first sign-in, the script creates an active starter member row for this account. The superadmin identity is configured server-side, not from a browser-supplied role.
 
 ## 4. Deploy the Apps Script bridge
 
 1. Open **Extensions → Apps Script** from the spreadsheet.
-2. Replace the editor contents with [`google_apps_script.js`](./google_apps_script.js), save, and authorize the requested spreadsheet and external-request scopes as the spreadsheet owner.
+2. The `google_apps_script.js` bridge has been added to the `BlessedTansi` Apps Script project and authorized as the spreadsheet owner.
 3. Open **Project Settings → Script properties** and add:
    - `SPREADSHEET_ID`: the ID from the spreadsheet URL.
-   - `GOOGLE_OAUTH_CLIENT_ID`: the same OAuth web client ID used by the app.
+   - `GOOGLE_OAUTH_CLIENT_ID`: the same OAuth web client ID used by the app (already set).
    - `SUPERADMIN_EMAILS`: comma-separated email addresses of the initial superadmins.
-4. Deploy → **New deployment** → type **Web app**. Execute as **Me**. Choose the narrowest access option that still allows member Google sign-in (typically **Anyone**); access to data and writes is then checked by the script using each verified Google ID token and the sheet role. Do not rely on the deployment's public URL being secret.
-5. Copy the deployed `/exec` URL into `appsScriptUrl`. After code changes, create a new deployment version.
+4. The web app is deployed as **Me**, with access set to **Anyone**. Access to data and writes is checked by the script using each verified Google ID token and the sheet role. Do not rely on the deployment URL being secret.
+5. The deployed `/exec` URL is configured in `assets/js/app.js`. After code changes, create a new deployment version.
 6. Confirm the superadmin email is spelled correctly before inviting members. The initial account must appear in `SUPERADMIN_EMAILS`; role changes in the browser cannot create another superadmin.
 
 The script requires all five tabs/headers above. `get_member_data` returns only the signed-in member's record and payments; finance executives receive pending payments; the complete private member list is exposed only to superadmins. Published CSV refreshes may be delayed briefly after spreadsheet changes.
